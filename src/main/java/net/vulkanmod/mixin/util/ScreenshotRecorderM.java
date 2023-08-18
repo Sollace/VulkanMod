@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class ScreenshotRecorderM {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Remove flipY() and removed bindTexture
      */
     @Overwrite
     public static NativeImage takeScreenshot(RenderTarget framebuffer) {

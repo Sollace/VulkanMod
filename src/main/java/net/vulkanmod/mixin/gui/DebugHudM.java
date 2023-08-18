@@ -3,11 +3,11 @@ package net.vulkanmod.mixin.gui;
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -39,7 +39,7 @@ public abstract class DebugHudM {
 //    /**
 //     * @author
 //     */
-//    @Overwrite
+//    @ Overwrite
 //    public void drawGameInformation(PoseStack matrices) {
 //        List<String> list = this.getGameInformation();
 //        list.add("");
@@ -78,10 +78,11 @@ public abstract class DebugHudM {
 //    }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use MultiBufferSource
      */
     @Overwrite
-    public void drawSystemInformation(PoseStack matrices) {
+    public void drawSystemInformation(GuiGraphics guiGraphics) {
         List<String> list = this.getSystemInformation();
 
         RenderSystem.enableBlend();
@@ -96,7 +97,7 @@ public abstract class DebugHudM {
             int l = this.minecraft.getWindow().getGuiScaledWidth() - 2 - k;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.fill(matrices, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+            GuiBatchRenderer.fill(guiGraphics.pose(), l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
         }
         GuiBatchRenderer.endBatch();
 
@@ -109,7 +110,7 @@ public abstract class DebugHudM {
             int l = this.minecraft.getWindow().getGuiScaledWidth() - 2 - k;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.drawString(this.font, bufferSource, matrices, string, l, m, 0xE0E0E0);
+            GuiBatchRenderer.drawString(this.font, bufferSource, guiGraphics.pose(), string, l, m, 0xE0E0E0);
         }
         bufferSource.endBatch();
     }

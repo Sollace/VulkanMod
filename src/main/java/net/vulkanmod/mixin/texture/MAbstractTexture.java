@@ -22,7 +22,8 @@ public abstract class MAbstractTexture implements VAbstractTextureI {
     protected VulkanImage vulkanImage;
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Call bindTexture() on self
      */
     @Overwrite
     public void bind() {
@@ -34,7 +35,8 @@ public abstract class MAbstractTexture implements VAbstractTextureI {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Release the VulkanImage
      */
     @Overwrite
     public void releaseId() {
@@ -48,12 +50,14 @@ public abstract class MAbstractTexture implements VAbstractTextureI {
         TextureUtil.releaseTextureId(this.id);
     }
 
+    @Override
     public void setId(int i) {
         this.id = i;
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward filtering to the vulkan image
      */
     @Overwrite
     public void setFilter(boolean blur, boolean mipmap) {
@@ -75,10 +79,12 @@ public abstract class MAbstractTexture implements VAbstractTextureI {
             VTextureSelector.bindTexture(VTextureSelector.getWhiteTexture());
     }
 
+    @Override
     public VulkanImage getVulkanImage() {
         return vulkanImage;
     }
 
+    @Override
     public void setVulkanImage(VulkanImage image) {
         this.vulkanImage = image;
 

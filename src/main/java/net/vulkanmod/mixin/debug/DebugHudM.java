@@ -3,11 +3,11 @@ package net.vulkanmod.mixin.debug;
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -47,7 +47,7 @@ public abstract class DebugHudM {
 
     @Shadow protected abstract List<String> getSystemInformation();
 
-    @Redirect(method = "getSystemInformation", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList([Ljava/lang/Object;)Ljava/util/ArrayList;"))
+    @Redirect(method = "getSystemInformation", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList([Ljava/lang/Object;)Ljava/util/ArrayList;", remap = false))
     private ArrayList<String> redirectList(Object[] elements) {
         ArrayList<String> strings = new ArrayList<>();
 
@@ -79,7 +79,7 @@ public abstract class DebugHudM {
 //    /**
 //     * @author
 //     */
-//    @Overwrite
+//    @ Overwrite
 //    public void drawGameInformation(PoseStack matrices) {
 //        List<String> list = this.getGameInformation();
 //        list.add("");
@@ -117,11 +117,11 @@ public abstract class DebugHudM {
 //        bufferSource.endBatch();
 //    }
 
-    @Inject(method = "drawGameInformation(Lcom/mojang/blaze3d/vertex/PoseStack;)V",
+    @Inject(method = "drawGameInformation(Lnet/minecraft/client/gui/GuiGraphics;)V",
             at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z",
                     shift = At.Shift.AFTER,
                     ordinal = 2))
-    protected void renderStuffOne(PoseStack poseStack, CallbackInfo ci)
+    protected void renderStuffOne(GuiGraphics graphics, CallbackInfo ci)
     {
 
         RenderSystem.enableBlend();
@@ -130,22 +130,24 @@ public abstract class DebugHudM {
     }
 
 
-    @Redirect(method = "drawGameInformation(Lcom/mojang/blaze3d/vertex/PoseStack;)V",
+    // TODO: The code these target does not exist and would have been overwritten, and one of these doesn't do anything
+    /*@Redirect(method = "drawGameInformation(Lnet/minecraft/client/gui/GuiGraphics;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/DebugScreenOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"))
-    protected void renderStuffRedirectTwo(PoseStack poseStack, int m, int k, int j, int e, int d)
+    protected void renderStuffRedirectTwo(GuiGraphics graphics, int m, int k, int j, int e, int d)
     {
-        GuiBatchRenderer.fill(poseStack, m, k, j, e, d);
+        graphics.fill(m, k, j, e, d);
     }
-    @Redirect(method = "drawGameInformation(Lcom/mojang/blaze3d/vertex/PoseStack;)V",
+
+    @Redirect(method = "drawGameInformation(Lnet/minecraft/client/gui/GuiGraphics;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;draw(Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/lang/String;FFI)I"))
     protected int renderStuffRedirectThree(Font instance, PoseStack $$0, String $$1, float $$2, float $$3, int $$4)
     {
         return 0;
-    }
+    }*/
 
-    @Inject(method = "drawGameInformation(Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At("TAIL"),
+    @Inject(method = "drawGameInformation(Lnet/minecraft/client/gui/GuiGraphics;)V", at = @At("TAIL"),
             locals = LocalCapture.CAPTURE_FAILHARD)
-    public void renderStuff3(PoseStack poseStack, CallbackInfo ci, List<String> list)
+    public void renderStuff3(GuiGraphics graphics, CallbackInfo ci, List<String> list)
     {
         GuiBatchRenderer.endBatch();
 
@@ -158,16 +160,17 @@ public abstract class DebugHudM {
             int l = 2;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.drawString(this.font, bufferSource, poseStack, string, 2.0f, (float)m, 0xE0E0E0);
+            GuiBatchRenderer.drawString(this.font, bufferSource, graphics.pose(), string, 2.0f, m, 0xE0E0E0);
         }
         bufferSource.endBatch();
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use GuiBatchRenderer
      */
     @Overwrite
-    public void drawSystemInformation(PoseStack matrices) {
+    public void drawSystemInformation(GuiGraphics graphics) {
         List<String> list = this.getSystemInformation();
 
         RenderSystem.enableBlend();
@@ -182,11 +185,10 @@ public abstract class DebugHudM {
             int l = this.minecraft.getWindow().getGuiScaledWidth() - 2 - k;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.fill(matrices, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+            graphics.fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
         }
         GuiBatchRenderer.endBatch();
 
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         for (int i = 0; i < list.size(); ++i) {
             String string = list.get(i);
             if (Strings.isNullOrEmpty(string)) continue;
@@ -195,8 +197,7 @@ public abstract class DebugHudM {
             int l = this.minecraft.getWindow().getGuiScaledWidth() - 2 - k;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.drawString(this.font, bufferSource, matrices, string, (float)l, (float)m, 0xE0E0E0);
+            graphics.drawString(this.font, string, l, m, 0xE0E0E0);
         }
-        bufferSource.endBatch();
     }
 }

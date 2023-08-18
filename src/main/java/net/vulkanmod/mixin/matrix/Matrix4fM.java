@@ -5,15 +5,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Matrix4f.class)
+@Mixin(value = Matrix4f.class, remap = false)
 public abstract class Matrix4fM {
 
     @Shadow public abstract Matrix4f perspective(float fovy, float aspect, float zNear, float zFar, boolean zZeroToOne);
     @Shadow public abstract Matrix4f ortho(float left, float right, float bottom, float top, float zNear, float zFar, boolean zZeroToOne);
 
     /**
-     * @author
-     * @reason
+     * @author Collateral
+     * @reason Set zZeroToOne parameter to true
+     *
+     * TODO: Side-effect changed: Original returned "this", new method returns a copy
      */
     @Overwrite(remap = false)
     public Matrix4f setOrtho(float left, float right, float bottom, float top, float zNear, float zFar) {
@@ -21,8 +23,10 @@ public abstract class Matrix4fM {
     }
 
     /**
-     * @author
-     * @reason
+     * @author Collateral
+     * @reason Set zZeroToOne parameter to true
+     *
+     * TODO: Side-effect changed: Original returned "this", new method returns a copy
      */
     @Overwrite(remap = false)
     public Matrix4f ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
@@ -30,8 +34,8 @@ public abstract class Matrix4fM {
     }
 
     /**
-     * @author
-     * @reason
+     * @author Collateral
+     * @reason Set zZeroToOne parameter to true
      */
     @Overwrite(remap = false)
     public Matrix4f perspective(float fovy, float aspect, float zNear, float zFar) {
@@ -39,8 +43,8 @@ public abstract class Matrix4fM {
     }
 
     /**
-     * @author
-     * @reason
+     * @author Collateral
+     * @reason Set zZeroToOne parameter to true
      */
     @Overwrite(remap = false)
     public Matrix4f setPerspective(float fovy, float aspect, float zNear, float zFar) {

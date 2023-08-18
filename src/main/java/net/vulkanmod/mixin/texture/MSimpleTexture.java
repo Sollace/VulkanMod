@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class MSimpleTexture {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Load Vulkan texture attributes
      */
     @Overwrite
     private void doLoad(NativeImage nativeImage, boolean blur, boolean clamp) {

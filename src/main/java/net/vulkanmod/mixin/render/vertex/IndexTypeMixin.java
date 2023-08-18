@@ -8,7 +8,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class IndexTypeMixin {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Only SHORT is supported
      */
     @Overwrite
     public static VertexFormat.IndexType least(int number) {

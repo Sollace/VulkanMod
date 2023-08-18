@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.vulkanmod.vulkan.Drawer;
 import net.vulkanmod.vulkan.Framebuffer;
 import net.vulkanmod.vulkan.util.DrawUtil;
-import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,13 +20,15 @@ public class RenderTargetMixin {
     Framebuffer framebuffer;
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Drawer
      */
     @Overwrite
     public void clear(boolean getError) {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason TODO
      */
     @Overwrite
     public void resize(int i, int j, boolean bl) {
@@ -45,7 +46,8 @@ public class RenderTargetMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Drawer
      */
     @Overwrite
     public void bindWrite(boolean updateViewport) {
@@ -53,7 +55,8 @@ public class RenderTargetMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
     @Overwrite
     public void unbindWrite() {
@@ -61,7 +64,8 @@ public class RenderTargetMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use DrawUtil
      */
     @Overwrite
     private void _blitToScreen(int width, int height, boolean disableBlend) {

@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexSorting;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -24,12 +26,13 @@ import java.util.function.Consumer;
 
 import static com.mojang.blaze3d.systems.RenderSystem.*;
 
-@Mixin(RenderSystem.class)
+@Mixin(value = RenderSystem.class, remap = false)
 public abstract class RenderSystemMixin {
 
     @Shadow private static Matrix4f projectionMatrix;
+    @Shadow(remap = true) private static VertexSorting vertexSorting;
     @Shadow private static Matrix4f savedProjectionMatrix;
-    @Shadow private static PoseStack modelViewStack;
+    @Shadow(remap = true) private static PoseStack modelViewStack;
     @Shadow private static Matrix4f modelViewMatrix;
     @Shadow private static Matrix4f textureMatrix;
     @Shadow @Final private static int[] shaderTextures;
@@ -45,9 +48,10 @@ public abstract class RenderSystemMixin {
     @Shadow private static @Nullable Thread renderThread;
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace abstracttexture.bindTexture() with VTextureSelector.bindTexture
      */
-    @Overwrite
+    @Overwrite(remap = true)
     public static void _setShaderTexture(int i, ResourceLocation location) {
         if (i >= 0 && i < shaderTextures.length) {
             TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
@@ -61,9 +65,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void initRenderer(int debugVerbosity, boolean debugSync) {
         VRenderSystem.initRenderer();
 
@@ -71,15 +76,19 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void setupDefaultState(int x, int y, int width, int height) { }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._enableColorLogicOp, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enableColorLogicOp() {
         assertOnGameThread();
         //GlStateManager._enableColorLogicOp();
@@ -88,9 +97,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._disableColorLogicOp, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disableColorLogicOp() {
         assertOnGameThread();
         //GlStateManager._disableColorLogicOp();
@@ -99,9 +111,11 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     * TODO: This should be in GlStateManager._logicOp, not here
      */
-    @Overwrite
+    @Overwrite(remap = true)
     public static void logicOp(GlStateManager.LogicOp op) {
         assertOnGameThread();
         //GlStateManager._logicOp(op.value);
@@ -110,43 +124,49 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void activeTexture(int texture) {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void glGenBuffers(Consumer<Integer> consumer) {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void glGenVertexArrays(Consumer<Integer> consumer) {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static int maxSupportedTextureSize() {
         return VRenderSystem.maxSupportedTextureSize();
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void clear(int mask, boolean getError) {
         VRenderSystem.clear(mask);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason TODO What are you doing?
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void flipFrame(long window) {
         org.lwjgl.glfw.GLFW.glfwPollEvents();
         RenderSystem.replayQueue();
@@ -154,33 +174,39 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Drawer
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void viewport(int x, int y, int width, int height) {
         Drawer.setViewport(x, y, width, height);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Drawer
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enableScissor(int x, int y, int width, int height) {
         Drawer.setScissor(x, y, width, height);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Drawer
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disableScissor() {
         Drawer.resetScissor();
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._disableDepthTest, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disableDepthTest() {
         assertOnGameThread();
         //GlStateManager._disableDepthTest();
@@ -188,9 +214,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._enableDepthTest, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enableDepthTest() {
         assertOnGameThreadOrInit();
         //GlStateManager._enableDepthTest();
@@ -198,9 +227,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._depthFunc, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void depthFunc(int i) {
         assertOnGameThread();
         //GlStateManager._depthFunc(i);
@@ -208,9 +240,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._depthMask, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void depthMask(boolean b) {
         assertOnGameThread();
         //GlStateManager._depthMask(b);
@@ -218,74 +253,85 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         VRenderSystem.colorMask(red, green, blue, alpha);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason TODO
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void blendEquation(int i) {
         assertOnRenderThread();
         //TODO
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enableBlend() {
         VRenderSystem.enableBlend();
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disableBlend() {
         VRenderSystem.disableBlend();
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void blendFunc(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
         VRenderSystem.blendFunc(sourceFactor, destFactor);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void blendFunc(int srcFactor, int dstFactor) {
         VRenderSystem.blendFunc(srcFactor, dstFactor);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void blendFuncSeparate(GlStateManager.SourceFactor p_69417_, GlStateManager.DestFactor p_69418_, GlStateManager.SourceFactor p_69419_, GlStateManager.DestFactor p_69420_) {
         VRenderSystem.blendFuncSeparate(p_69417_, p_69418_, p_69419_, p_69420_);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void blendFuncSeparate(int srcFactorRGB, int dstFactorRGB, int srcFactorAlpha, int dstFactorAlpha) {
         VRenderSystem.blendFuncSeparate(srcFactorRGB, dstFactorRGB, srcFactorAlpha, dstFactorAlpha);
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._enableCull, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enableCull() {
         assertOnGameThread();
         //GlStateManager._enableCull();
@@ -294,9 +340,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._disableCull, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disableCull() {
         assertOnGameThread();
         //GlStateManager._disableCull();
@@ -305,9 +354,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._enablePolygonOffset, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void enablePolygonOffset() {
         assertOnGameThread();
 //      GlStateManager._enablePolygonOffset();
@@ -316,9 +368,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._disablePolygonOffset, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void disablePolygonOffset() {
         assertOnGameThread();
 //      GlStateManager._disablePolygonOffset();
@@ -327,9 +382,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._polygonOffset, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void polygonOffset(float p_69864_, float p_69865_) {
         assertOnGameThread();
 //      GlStateManager._polygonOffset(p_69864_, p_69865_);
@@ -338,9 +396,12 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
+     *
+     * TODO: This should be in GlStateManager._clearColor, not here
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void clearColor(float p_69425_, float p_69426_, float p_69427_, float p_69428_) {
         assertOnGameThreadOrInit();
 //      GlStateManager._clearColor(p_69425_, p_69426_, p_69427_, p_69428_);
@@ -349,9 +410,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void _setShaderLights(Vector3f p_157174_, Vector3f p_157175_) {
         shaderLightDirections[0] = p_157174_;
         shaderLightDirections[1] = p_157175_;
@@ -367,9 +429,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     private static void _setShaderColor(float r, float g, float b, float a) {
         shaderColor[0] = r;
         shaderColor[1] = g;
@@ -381,9 +444,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     private static void _setShaderFogColor(float f, float g, float h, float i) {
         shaderFogColor[0] = f;
         shaderFogColor[1] = g;
@@ -394,9 +458,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void renderCrosshair(int p_69882_) {
         assertOnGameThread();
         //GLX._renderCrosshair(p_69882_, true, true, true);
@@ -405,20 +470,23 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
-    public static void setProjectionMatrix(Matrix4f projectionMatrix) {
+    @Overwrite
+    public static void setProjectionMatrix(Matrix4f projectionMatrix, VertexSorting vertexSorting) {
         Matrix4f matrix4f = new Matrix4f(projectionMatrix);
         if (!isOnRenderThread()) {
             recordRenderCall(() -> {
                 RenderSystemMixin.projectionMatrix = matrix4f;
+                RenderSystemMixin.vertexSorting = vertexSorting;
                 //Vulkan
                 VRenderSystem.applyProjectionMatrix(matrix4f);
                 VRenderSystem.calculateMVP();
             });
         } else {
             RenderSystemMixin.projectionMatrix = matrix4f;
+            RenderSystemMixin.vertexSorting = vertexSorting;
             //Vulkan
             VRenderSystem.applyProjectionMatrix(matrix4f);
             VRenderSystem.calculateMVP();
@@ -427,9 +495,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void setTextureMatrix(Matrix4f matrix4f) {
         Matrix4f matrix4f2 = new Matrix4f(matrix4f);
         if (!RenderSystem.isOnRenderThread()) {
@@ -444,9 +513,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void resetTextureMatrix() {
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> textureMatrix.identity());
@@ -457,9 +527,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void applyModelViewMatrix() {
         Matrix4f matrix4f = new Matrix4f(modelViewStack.last().pose());
         if (!isOnRenderThread()) {
@@ -479,9 +550,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VRenderSystem
      */
-    @Overwrite(remap = false)
+    @Overwrite
     private static void _restoreProjectionMatrix() {
         projectionMatrix = savedProjectionMatrix;
         //Vulkan
@@ -490,9 +562,10 @@ public abstract class RenderSystemMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason TODO
      */
-    @Overwrite(remap = false)
+    @Overwrite
     public static void texParameter(int target, int pname, int param) {
         //TODO
     }

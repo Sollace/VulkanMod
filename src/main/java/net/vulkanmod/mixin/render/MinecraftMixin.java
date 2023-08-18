@@ -53,7 +53,7 @@ public class MinecraftMixin {
     @Shadow @Final private PaintingTextureManager paintingTextures;
     @Shadow public boolean noRender;
 
-    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(IZ)V", shift = At.Shift.BEFORE))
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clear(IZ)V", shift = At.Shift.BEFORE, remap = false))
     private void beginRender(boolean tick, CallbackInfo ci) {
         Drawer drawer = Drawer.getInstance();
         drawer.initiateRenderPass();
@@ -81,7 +81,7 @@ public class MinecraftMixin {
     private void removeBlit(RenderTarget instance, int i, int j) {
     }
 
-    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Ljava/lang/Thread;yield()V"))
+    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Ljava/lang/Thread;yield()V", remap = false))
     private void removeThreadYield() {
     }
 
@@ -111,10 +111,12 @@ public class MinecraftMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Do Vulkan.waitIdle and Vulkan.cleanUp
      */
     @Overwrite
     public void close() {
+        // TODO: @Inject(method = "close", at = @At("HEAD"))
         Vulkan.waitIdle();
 
         try {
@@ -129,6 +131,7 @@ public class MinecraftMixin {
             this.textureManager.close();
             this.resourceManager.close();
 
+            // TODO: @Inject(method = "close", at = @At(value = "INVOKE", target = "net/minecraft/Util.shutdownExecutors()V")
             Vulkan.cleanUp();
 
             Util.shutdownExecutors();

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TextureAtlas.class)
 public class MSpriteAtlasTexture {
 
-    @Redirect(method = "upload", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;prepareImage(IIII)V"))
+    @Redirect(method = "upload", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;prepareImage(IIII)V", remap = false))
     private void redirect(int id, int maxLevel, int width, int height) {
         VulkanImage image = new VulkanImage.Builder(width, height).setMipLevels(maxLevel + 1).createVulkanImage();
         ((VAbstractTextureI)(this)).setVulkanImage(image);
@@ -20,7 +20,10 @@ public class MSpriteAtlasTexture {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Filtering is not supported
+     *
+     * TODO: Implement filtering?
      */
     @Overwrite
     public void updateFilter(SpriteLoader.Preparations data) {

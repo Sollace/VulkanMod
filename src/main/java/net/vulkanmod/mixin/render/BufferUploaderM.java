@@ -11,13 +11,15 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class BufferUploaderM {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
     @Overwrite
     public static void reset() {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason User Drawer
      */
     @Overwrite
     public static void drawWithShader(BufferBuilder.RenderedBuffer buffer) {

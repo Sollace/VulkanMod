@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 public class MPlayerSkinTexture {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Copy image to Vulkan image
      */
     @Overwrite
     private void upload(NativeImage image) {

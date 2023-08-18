@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.vulkanmod.render.gui.GuiBatchRenderer;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ProfilerOverlay extends GuiComponent {
+public class ProfilerOverlay {
     public static ProfilerOverlay INSTANCE;
     public static boolean shouldRender;
 
@@ -82,7 +81,7 @@ public class ProfilerOverlay extends GuiComponent {
                 int j = 9;
                 int m = 2 + j * i;
 
-                GuiBatchRenderer.drawString(this.font, bufferSource, poseStack, string, 2.0f, (float)m, 0xE0E0E0);
+                GuiBatchRenderer.drawString(this.font, bufferSource, poseStack, string, 2.0f, m, 0xE0E0E0);
             }
         }
 

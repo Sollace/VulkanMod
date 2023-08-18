@@ -19,13 +19,10 @@ public abstract class MDynamicTexture extends AbstractTexture {
 
     @Shadow public abstract void upload();
 
-    @Redirect(method = "<init>(IIZ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;prepareImage(III)V"))
+    @Redirect(method = { "<init>(IIZ)V", "<init>(Lcom/mojang/blaze3d/platform/NativeImage;)V" },
+            at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;prepareImage(III)V", remap = false)
+    )
     private void redirect(int id, int width, int height) {
-        createTexture();
-    }
-
-    @Redirect(method = "<init>(Lcom/mojang/blaze3d/platform/NativeImage;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;prepareImage(III)V"))
-    private void redirect2(int id, int width, int height) {
         createTexture();
     }
 

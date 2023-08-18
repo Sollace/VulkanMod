@@ -57,7 +57,8 @@ public abstract class MNativeImage {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Upload texture using VTextureSelector instead
      */
     @Overwrite
     private void _upload(int level, int xOffset, int yOffset, int unpackSkipPixels, int unpackSkipRows, int widthIn, int heightIn, boolean blur, boolean clamp, boolean mipmap, boolean autoClose) {
@@ -71,7 +72,8 @@ public abstract class MNativeImage {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Download using the underlying VulkanImage
      */
     @Overwrite
     public void downloadTexture(int level, boolean removeAlpha) {

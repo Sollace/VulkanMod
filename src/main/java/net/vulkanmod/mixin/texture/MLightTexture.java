@@ -1,6 +1,5 @@
 package net.vulkanmod.mixin.texture;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.vulkanmod.interfaces.VAbstractTextureI;
@@ -16,7 +15,8 @@ public class MLightTexture {
     @Shadow @Final private DynamicTexture lightTexture;
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with VTextureSelector
      */
     @Overwrite
     public void turnOnLightLayer() {

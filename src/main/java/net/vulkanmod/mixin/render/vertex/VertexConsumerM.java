@@ -18,10 +18,11 @@ public interface VertexConsumerM {
     @Shadow void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ);
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace default implementation
      */
     @Overwrite
-    default public void putBulkData(PoseStack.Pose matrixEntry, BakedQuad quad, float[] brightness, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData) {
+    default void putBulkData(PoseStack.Pose matrixEntry, BakedQuad quad, float[] brightness, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData) {
         int[] js = quad.getVertices();
         Vec3i vec3i = quad.getDirection().getNormal();
         Vector3f vec3f = new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());

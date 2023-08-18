@@ -1,20 +1,14 @@
 package net.vulkanmod.render.vertex;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Floats;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.vulkanmod.render.util.SortUtil;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
@@ -65,7 +59,7 @@ public class TerrainBufferBuilder implements VertexConsumer {
 		if (this.nextElementByte + i > this.buffer.capacity()) {
 			int j = this.buffer.capacity();
 			int k = j + roundUp(i);
-			LOGGER.debug((String)"Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", (Object)j, (Object)k);
+			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
 			ByteBuffer byteBuffer = MemoryTracker.resize(this.buffer, k);
 			byteBuffer.rewind();
 			this.buffer = byteBuffer;
@@ -124,7 +118,7 @@ public class TerrainBufferBuilder implements VertexConsumer {
 			this.building = true;
 			this.mode = mode;
 			this.switchFormat(vertexFormat);
-			this.currentElement = (VertexFormatElement)vertexFormat.getElements().get(0);
+			this.currentElement = vertexFormat.getElements().get(0);
 			this.elementIndex = 0;
 			this.buffer.rewind();
 		}
@@ -142,28 +136,11 @@ public class TerrainBufferBuilder implements VertexConsumer {
 
 	private IntConsumer intConsumer(int i, VertexFormat.IndexType indexType) {
 		MutableInt mutableInt = new MutableInt(i);
-		IntConsumer var10000;
-		switch (indexType) {
-			case BYTE:
-				var10000 = (ix) -> {
-					this.buffer.put(mutableInt.getAndIncrement(), (byte)ix);
-				};
-				break;
-			case SHORT:
-				var10000 = (ix) -> {
-					this.buffer.putShort(mutableInt.getAndAdd(2), (short)ix);
-				};
-				break;
-			case INT:
-				var10000 = (ix) -> {
-					this.buffer.putInt(mutableInt.getAndAdd(4), ix);
-				};
-				break;
-			default:
-				throw new IncompatibleClassChangeError();
-		}
-
-		return var10000;
+		return switch (indexType) {
+			case SHORT -> ix -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)ix);
+			case INT -> ix -> this.buffer.putInt(mutableInt.getAndAdd(4), ix);
+			default -> throw new IncompatibleClassChangeError();
+		};
 	}
 
 	private Vector3f[] makeQuadSortingPoints() {
@@ -313,7 +290,8 @@ public class TerrainBufferBuilder implements VertexConsumer {
 		this.indexOnly = false;
 	}
 
-	public void endVertex() {
+	@Override
+    public void endVertex() {
 		if (this.elementIndex != 0) {
 			throw new IllegalStateException("Not filled all elements of the vertex");
 		} else {
@@ -342,7 +320,8 @@ public class TerrainBufferBuilder implements VertexConsumer {
 
 	}
 
-	public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
+	@Override
+    public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
 //		this.defaultVertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
 		this.compressedVertex(x, y, z, red, green, blue, alpha, u, v, light);
 	}

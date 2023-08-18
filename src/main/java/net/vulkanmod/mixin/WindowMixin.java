@@ -2,7 +2,6 @@ package net.vulkanmod.mixin;
 
 import com.mojang.blaze3d.platform.*;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.vulkanmod.Initializer;
 import net.vulkanmod.config.Config;
 import net.vulkanmod.config.Options;
@@ -45,18 +44,18 @@ public abstract class WindowMixin {
     @Shadow private int width;
     @Shadow private int height;
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwWindowHint(II)V"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwWindowHint(II)V", remap = false))
     private void redirect(int hint, int value) { }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwMakeContextCurrent(J)V"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwMakeContextCurrent(J)V"), remap = false)
     private void redirect2(long window) { }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL;createCapabilities()Lorg/lwjgl/opengl/GLCapabilities;"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL;createCapabilities()Lorg/lwjgl/opengl/GLCapabilities;"), remap = false)
     private GLCapabilities redirect2() {
         return null;
     }
 
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J"))
+    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwCreateWindow(IILjava/lang/CharSequence;JJ)J"), remap = false)
     private void vulkanHint(WindowEventHandler windowEventHandler, ScreenManager screenManager, DisplayData displayData, String string, String string2, CallbackInfo ci) {
         GLFW.glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
@@ -67,7 +66,8 @@ public abstract class WindowMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use Vulkan
      */
     @Overwrite
     public void updateVsync(boolean vsync) {
@@ -76,7 +76,8 @@ public abstract class WindowMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Store fullscreen state statically
      */
     @Overwrite
     public void toggleFullScreen() {
@@ -85,7 +86,8 @@ public abstract class WindowMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Store fullscreen state statically
      */
     @Overwrite
     public void updateDisplay() {
@@ -101,7 +103,8 @@ public abstract class WindowMixin {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use VideoResolution
      */
     @Overwrite
     private void setMode() {

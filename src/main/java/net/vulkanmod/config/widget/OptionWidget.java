@@ -1,10 +1,9 @@
 package net.vulkanmod.config.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -18,7 +17,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.vulkanmod.vulkan.util.VUtil;
 
-public abstract class OptionWidget extends GuiComponent
+public abstract class OptionWidget
         implements Renderable, GuiEventListener, NarratableEntry {
 
     public static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation("textures/gui/widgets.png");
@@ -49,16 +48,16 @@ public abstract class OptionWidget extends GuiComponent
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         if (!this.visible) {
             return;
         }
         this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
         this.controlHovered = mouseX >= this.controlX && mouseY >= this.y && mouseX < this.controlX + this.controlWidth && mouseY < this.y + this.height;
-        this.renderWidget(matrices, mouseX, mouseY, delta);
+        this.renderWidget(graphics, mouseX, mouseY, delta);
     }
 
-    public void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         Minecraft minecraftClient = Minecraft.getInstance();
         Font textRenderer = minecraftClient.font;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -72,13 +71,13 @@ public abstract class OptionWidget extends GuiComponent
         int color = this.controlHovered ? VUtil.packColor(0.0f, 0.0f, 0.0f, 0.45f) : VUtil.packColor(0.0f, 0.0f, 0.0f, 0.3f);
 
         if(this.hovered)
-            fill(matrices, this.x - 2, this.y - 2, this.x + this.width + 2, this.y + this.height + 2, 0x28000000);
-        fill(matrices, this.controlX, this.y, this.controlX + this.controlWidth, this.y + height, color);
+            graphics.fill(this.x - 2, this.y - 2, this.x + this.width + 2, this.y + this.height + 2, 0x28000000);
+        graphics.fill(this.controlX, this.y, this.controlX + this.controlWidth, this.y + height, color);
 
-        this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
+        this.renderBackground(graphics, minecraftClient, mouseX, mouseY);
         int j = this.active ? 0xFFFFFF : 0xA0A0A0;
-        GuiComponent.drawString(matrices, textRenderer, this.getName().getVisualOrderText(), this.x, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0f) << 24);
-        GuiComponent.drawCenteredString(matrices, textRenderer, this.getDisplayedValue(), this.controlX + this.controlWidth / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0f) << 24);
+        graphics.drawString(textRenderer, this.getName().getVisualOrderText(), this.x, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0f) << 24);
+        graphics.drawCenteredString(textRenderer, this.getDisplayedValue(), this.controlX + this.controlWidth / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0f) << 24);
     }
 
 
@@ -96,7 +95,7 @@ public abstract class OptionWidget extends GuiComponent
         return this.hovered || this.focused;
     }
 
-    protected void renderBackground(PoseStack matrices, Minecraft client, int mouseX, int mouseY) {
+    protected void renderBackground(GuiGraphics graphics, Minecraft client, int mouseX, int mouseY) {
     }
 
     public void onClick(double mouseX, double mouseY) {
@@ -158,11 +157,11 @@ public abstract class OptionWidget extends GuiComponent
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.active && this.visible && mouseX >= (double)this.x && mouseY >= (double)this.y && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + this.height);
+        return this.active && this.visible && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
     }
 
     protected boolean clicked(double mouseX, double mouseY) {
-        return this.active && this.visible && mouseX >= (double)this.controlX && mouseY >= (double)this.y && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + this.height);
+        return this.active && this.visible && mouseX >= this.controlX && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
     }
 
     public Component getName() {

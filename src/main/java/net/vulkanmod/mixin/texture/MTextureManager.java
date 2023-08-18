@@ -25,7 +25,8 @@ public abstract class MTextureManager {
     @Shadow public abstract AbstractTexture getTexture(ResourceLocation resourceLocation, AbstractTexture abstractTexture);
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Use GraphicsQueue
      */
     @Overwrite
     public void tick() {
@@ -45,7 +46,9 @@ public abstract class MTextureManager {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason TODO
+     *
      */
     @Overwrite
     public void release(ResourceLocation id) {

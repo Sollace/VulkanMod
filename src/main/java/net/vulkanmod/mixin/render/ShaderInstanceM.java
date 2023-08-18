@@ -1,12 +1,10 @@
 package net.vulkanmod.mixin.render;
 
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.Program;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -54,6 +52,7 @@ public class ShaderInstanceM implements ShaderMixed {
     boolean isLegacy = false;
 
 
+    @Override
     public Pipeline getPipeline() {
         return pipeline;
     }
@@ -82,7 +81,8 @@ public class ShaderInstanceM implements ShaderMixed {
     private void bindAttr(int program, int index, CharSequence name) {}
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward to pipeline
      */
     @Overwrite
     public void close() {
@@ -90,7 +90,8 @@ public class ShaderInstanceM implements ShaderMixed {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Remove Screen size and line width uniforms
      */
     @Overwrite
     public void apply() {
@@ -121,7 +122,8 @@ public class ShaderInstanceM implements ShaderMixed {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Replace with NOOP
      */
     @Overwrite
     public void clear() {}

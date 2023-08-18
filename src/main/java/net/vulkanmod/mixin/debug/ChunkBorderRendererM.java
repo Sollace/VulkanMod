@@ -23,8 +23,8 @@ public class ChunkBorderRendererM {
     @Shadow @Final private static int YELLOW;
 
     /**
-     * @author
-     * @reason
+     * @author Collateral
+     * @reason Remove a bunch of stuff I don't know
      */
     @Overwrite
     public void render(PoseStack poseStack, MultiBufferSource multiBufferSource, double d, double e, double f) {
@@ -38,12 +38,12 @@ public class ChunkBorderRendererM {
         Entity entity = this.minecraft.gameRenderer.getMainCamera().getEntity();
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        double g = (double)this.minecraft.level.getMinBuildHeight() - e;
-        double h = (double)this.minecraft.level.getMaxBuildHeight() - e;
+        double g = this.minecraft.level.getMinBuildHeight() - e;
+        double h = this.minecraft.level.getMaxBuildHeight() - e;
 //        RenderSystem.disableBlend();
         ChunkPos chunkPos = entity.chunkPosition();
-        double i = (double)chunkPos.getMinBlockX() - d;
-        double j = (double)chunkPos.getMinBlockZ() - f;
+        double i = chunkPos.getMinBlockX() - d;
+        double j = chunkPos.getMinBlockZ() - f;
         RenderSystem.lineWidth(1.0F);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
@@ -62,10 +62,10 @@ public class ChunkBorderRendererM {
 //                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
 //                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
 
-                bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
-                bufferBuilder.vertex(i + (double)k + lw, g, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
-                bufferBuilder.vertex(i + (double)k + lw, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
+                bufferBuilder.vertex(i + k, g, j + l).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
+                bufferBuilder.vertex(i + k, h, j + l).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
+                bufferBuilder.vertex(i + k + lw, g, j + l).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
+                bufferBuilder.vertex(i + k + lw, h, j + l).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
             }
         }
 

@@ -1,11 +1,9 @@
 package net.vulkanmod.config;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -103,7 +101,7 @@ public class OptionScreenV extends Screen {
     }
 
     private void addButtons() {
-        int buttonX = (int) (this.width - 150);
+        int buttonX = this.width - 150;
         int buttonGap = 55;
         this.applyButton = new CustomButtonWidget(buttonX, this.height - 27, 50, 20, Component.literal("Apply"), button -> {
             Options.applyOptions(Initializer.CONFIG, new Option[][]{this.videoOpts, this.graphicsOpts, this.otherOpts});
@@ -116,6 +114,7 @@ public class OptionScreenV extends Screen {
         this.addRenderableWidget(this.doneButton);
     }
 
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (GuiEventListener element : this.children()) {
             if (!element.mouseClicked(mouseX, mouseY, button)) continue;
@@ -134,18 +133,18 @@ public class OptionScreenV extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         this.updateStatus();
 
-        this.renderBackground(matrices);
-        this.currentList.render(matrices, mouseX, mouseY, delta);
+        this.renderBackground(graphics);
+        this.currentList.render(graphics, mouseX, mouseY, delta);
 //        fill(matrices, 0, 0, width, height, VUtil.packColor(0.6f, 0.2f, 0.2f, 0.5f));
 
 //        VideoOptionsScreen.drawCenteredComponent(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
         List<FormattedCharSequence> list = getHoveredButtonTooltip(this.currentList, mouseX, mouseY);
         if (list != null) {
-            this.renderTooltip(matrices, list, mouseX, mouseY);
+            graphics.renderTooltip(minecraft.font, list, mouseX, mouseY);
         }
     }
 

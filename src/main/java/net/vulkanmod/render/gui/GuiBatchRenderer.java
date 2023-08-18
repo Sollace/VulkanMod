@@ -3,15 +3,12 @@ package net.vulkanmod.render.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 
-public class GuiBatchRenderer extends GuiComponent {
+public class GuiBatchRenderer {
 
 //    public static void blit(PoseStack p_93201_, int p_93202_, int p_93203_, int p_93204_, int p_93205_, int p_93206_, TextureAtlasSprite sprite) {
 //        innerBlit(p_93201_.last().pose(), p_93202_, p_93202_ + p_93205_, p_93203_, p_93203_ + p_93206_, p_93204_, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
@@ -46,21 +43,21 @@ public class GuiBatchRenderer extends GuiComponent {
     }
 
     private static void innerBlit(PoseStack poseStack, int p_93189_, int p_93190_, int p_93191_, int p_93192_, int p_93193_, int p_93194_, int p_93195_, float p_93196_, float p_93197_, int p_93198_, int p_93199_) {
-        innerBlit(poseStack.last().pose(), p_93189_, p_93190_, p_93191_, p_93192_, p_93193_, (p_93196_ + 0.0F) / (float)p_93198_, (p_93196_ + (float)p_93194_) / (float)p_93198_, (p_93197_ + 0.0F) / (float)p_93199_, (p_93197_ + (float)p_93195_) / (float)p_93199_);
+        innerBlit(poseStack.last().pose(), p_93189_, p_93190_, p_93191_, p_93192_, p_93193_, (p_93196_ + 0.0F) / p_93198_, (p_93196_ + p_93194_) / p_93198_, (p_93197_ + 0.0F) / p_93199_, (p_93197_ + p_93195_) / p_93199_);
     }
 
     private static void innerBlit(Matrix4f matrix4f, int x1, int x2, int y1, int y2, int z, int p_93194_, int p_93195_, float u, float v, int p_93198_, int p_93199_) {
-        innerBlit(matrix4f, x1, x2, y1, y2, z, (u + 0.0F) / (float)p_93198_, (u + (float)p_93194_) / (float)p_93198_, (v + 0.0F) / (float)p_93199_, (v + (float)p_93195_) / (float)p_93199_);
+        innerBlit(matrix4f, x1, x2, y1, y2, z, (u + 0.0F) / p_93198_, (u + p_93194_) / p_93198_, (v + 0.0F) / p_93199_, (v + p_93195_) / p_93199_);
     }
 
     public static void innerBlit(Matrix4f matrix4f, int x1, int x2, int y1, int y2, int z, float uv1, float uv2, float uv3, float uv4) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
-        bufferbuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).uv(uv1, uv4).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).uv(uv2, uv4).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).uv(uv2, uv3).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).uv(uv1, uv3).endVertex();
+        bufferbuilder.vertex(matrix4f, x1, y2, z).uv(uv1, uv4).endVertex();
+        bufferbuilder.vertex(matrix4f, x2, y2, z).uv(uv2, uv4).endVertex();
+        bufferbuilder.vertex(matrix4f, x2, y1, z).uv(uv2, uv3).endVertex();
+        bufferbuilder.vertex(matrix4f, x1, y1, z).uv(uv1, uv3).endVertex();
 
     }
 
@@ -85,16 +82,16 @@ public class GuiBatchRenderer extends GuiComponent {
             y2 = j;
         }
 
-        float f3 = (float)(color >> 24 & 255) / 255.0F;
-        float f = (float)(color >> 16 & 255) / 255.0F;
-        float f1 = (float)(color >> 8 & 255) / 255.0F;
-        float f2 = (float)(color & 255) / 255.0F;
+        float f3 = (color >> 24 & 255) / 255.0F;
+        float f = (color >> 16 & 255) / 255.0F;
+        float f1 = (color >> 8 & 255) / 255.0F;
+        float f2 = (color & 255) / 255.0F;
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
 
-        bufferbuilder.vertex(matrix4f, (float)x1, (float)y2, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x2, (float)y2, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x2, (float)y1, 0.0F).color(f, f1, f2, f3).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)x1, (float)y1, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix4f, x1, y2, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix4f, x2, y2, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix4f, x2, y1, 0.0F).color(f, f1, f2, f3).endVertex();
+        bufferbuilder.vertex(matrix4f, x1, y1, 0.0F).color(f, f1, f2, f3).endVertex();
 
     }
 

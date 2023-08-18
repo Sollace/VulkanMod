@@ -6,11 +6,13 @@ import net.vulkanmod.vulkan.Vulkan;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+
 @Mixin(GlUtil.class)
 public class GlDebugInfoM {
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward to vulkan hardware
      */
     @Overwrite
     public static String getVendor() {
@@ -18,7 +20,8 @@ public class GlDebugInfoM {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward to vulkan hardware
      */
     @Overwrite
     public static String getRenderer() {
@@ -26,7 +29,8 @@ public class GlDebugInfoM {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward to vulkan hardware
      */
     @Overwrite
     public static String getOpenGLVersion() {
@@ -34,7 +38,8 @@ public class GlDebugInfoM {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Forward to vulkan hardware
      */
     @Overwrite
     public static String getCpuInfo() {

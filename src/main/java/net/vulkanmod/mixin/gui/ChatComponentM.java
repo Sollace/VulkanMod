@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -62,7 +63,7 @@ public abstract class ChatComponentM {
 //    /**
 //     * @author
 //     */
-//    @Overwrite
+//    @ Overwrite
 //    public void render(PoseStack poseStack, int i, int j, int k) {
 //        int v;
 //        int u;
@@ -214,26 +215,28 @@ public abstract class ChatComponentM {
 //    }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Change shadow rendering to use GuiBatchRenderer
      */
     @Overwrite
-    public void render(PoseStack poseStack, int i, int j, int k) {
+    public void render(GuiGraphics graphics, int i, int j, int k) {
+        PoseStack poseStack = graphics.pose();
         if (!this.isChatHidden()) {
             int l = this.getLinesPerPage();
             int m = this.trimmedMessages.size();
             if (m > 0) {
                 boolean bl = this.isChatFocused();
                 float f = (float)this.getScale();
-                int n = Mth.ceil((float)this.getWidth() / f);
+                int n = Mth.ceil(this.getWidth() / f);
                 int o = this.minecraft.getWindow().getGuiScaledHeight();
                 poseStack.pushPose();
                 poseStack.scale(f, f, 1.0F);
                 poseStack.translate(4.0F, 0.0F, 0.0F);
-                int p = Mth.floor((float)(o - 40) / f);
-                int q = this.getMessageEndIndexAt(this.screenToChatX((double)j), this.screenToChatY((double)k));
-                double d = (Double)this.minecraft.options.chatOpacity().get() * 0.8999999761581421 + 0.10000000149011612;
-                double e = (Double)this.minecraft.options.textBackgroundOpacity().get();
-                double g = (Double)this.minecraft.options.chatLineSpacing().get();
+                int p = Mth.floor((o - 40) / f);
+                int q = this.getMessageEndIndexAt(this.screenToChatX(j), this.screenToChatY(k));
+                double d = this.minecraft.options.chatOpacity().get() * 0.8999999761581421 + 0.10000000149011612;
+                double e = this.minecraft.options.textBackgroundOpacity().get();
+                double g = this.minecraft.options.chatLineSpacing().get();
                 int r = this.getLineHeight();
                 int s = (int)Math.round(-8.0 * (g + 1.0) + 4.0 * g);
                 int t = 0;
@@ -257,7 +260,7 @@ public abstract class ChatComponentM {
 
                 for(int u = 0; u + this.chatScrollbarPos < this.trimmedMessages.size() && u < l; ++u) {
                     int v = u + this.chatScrollbarPos;
-                    GuiMessage.Line line = (GuiMessage.Line)this.trimmedMessages.get(v);
+                    GuiMessage.Line line = this.trimmedMessages.get(v);
                     if (line != null) {
                         w = i - line.addedTime();
                         if (w < 200 || bl) {
@@ -299,7 +302,7 @@ public abstract class ChatComponentM {
 
                 for(int u = 0; u + this.chatScrollbarPos < this.trimmedMessages.size() && u < l; ++u) {
                     int v = u + this.chatScrollbarPos;
-                    GuiMessage.Line line = (GuiMessage.Line)this.trimmedMessages.get(v);
+                    GuiMessage.Line line = this.trimmedMessages.get(v);
                     if (line != null) {
                         w = i - line.addedTime();
                         if (w < 200 || bl) {
@@ -329,7 +332,7 @@ public abstract class ChatComponentM {
 //                                RenderSystem.enableBlend();
 //                                poseStack.translate(0.0F, 0.0F, 50.0F);
 //                                this.minecraft.font.drawShadow(poseStack, line.content(), 0.0F, (float)ab, 16777215 + (x << 24));
-                                GuiBatchRenderer.drawShadow(this.minecraft.font, bufferSource, mat2, line.content(), 0.0F, (float)ab, 16777215 + (x << 24));
+                                GuiBatchRenderer.drawShadow(this.minecraft.font, bufferSource, mat2, line.content(), 0.0F, ab, 16777215 + (x << 24));
 //                                RenderSystem.disableBlend();
 //                                poseStack.popPose();
                             }
@@ -345,7 +348,7 @@ public abstract class ChatComponentM {
                     ag = (int)(128.0 * d);
                     w = (int)(255.0 * e);
                     poseStack.pushPose();
-                    poseStack.translate(0.0F, (float)p, 50.0F);
+                    poseStack.translate(0.0F, p, 50.0F);
                     GuiBatchRenderer.fill(poseStack, -2, 0, n + 4, 9, w << 24);
                     RenderSystem.enableBlend();
                     poseStack.translate(0.0F, 0.0F, 50.0F);
@@ -367,8 +370,8 @@ public abstract class ChatComponentM {
                         y = ai > 0 ? 170 : 96;
                         int z = this.newMessageSinceScroll ? 13382451 : 3355562;
                         aa = n + 4;
-                        ChatComponent.fill(poseStack, aa, -ai, aa + 2, -ai - x, z + (y << 24));
-                        ChatComponent.fill(poseStack, aa + 2, -ai, aa + 1, -ai - x, 13421772 + (y << 24));
+                        graphics.fill(aa, -ai, aa + 2, -ai - x, z + (y << 24));
+                        graphics.fill(aa + 2, -ai, aa + 1, -ai - x, 13421772 + (y << 24));
                     }
                 }
 
@@ -377,9 +380,9 @@ public abstract class ChatComponentM {
         }
     }
 
-    private void drawTagIcon(PoseStack poseStack, int i, int j, GuiMessageTag.Icon icon) {
+    private void drawTagIcon(GuiGraphics graphics, int i, int j, GuiMessageTag.Icon icon) {
         int k = j - icon.height - 1;
-        icon.draw(poseStack, i, k);
+        icon.draw(graphics, i, k);
 
     }
 
@@ -391,7 +394,7 @@ public abstract class ChatComponentM {
     }
 
     private static double getTimeFactor(int i) {
-        double d = (double)i / 200.0;
+        double d = i / 200.0;
         d = 1.0 - d;
         d *= 10.0;
         d = Mth.clamp(d, 0.0, 1.0);

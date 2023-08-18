@@ -4,14 +4,14 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.vulkanmod.config.widget.OptionWidget;
-import net.vulkanmod.vulkan.util.VUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -35,6 +35,7 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
         }
     }
 
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         this.updateScrollingState(mouseX, mouseY, button);
         if (!this.isMouseOver(mouseX, mouseY)) {
@@ -48,7 +49,7 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
                     return true;
                 }
             } else if (button == 0) {
-                this.clickedHeader((int)(mouseX - (double)(this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.y0) + (int)this.getScrollAmount() - 4);
+                this.clickedHeader((int)(mouseX - (this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - this.y0) + (int)this.getScrollAmount() - 4);
                 return true;
             }
 
@@ -62,20 +63,20 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
         int j = this.x0 + this.width / 2;
         int k = j - i;
         int l = j + i;
-        int m = Mth.floor(y - (double)this.y0) - this.headerHeight + (int)this.getScrollAmount() - 4;
+        int m = Mth.floor(y - this.y0) - this.headerHeight + (int)this.getScrollAmount() - 4;
         int n = m / this.itemHeight;
-        if (x < this.getScrollbarPosition() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()) {
-            return (net.vulkanmod.config.OptionList2.Entry)this.children().get(n);
+        if (x < this.getScrollbarPosition() && x >= k && x <= l && n >= 0 && m >= 0 && n < this.getItemCount()) {
+            return this.children().get(n);
         }
         return null;
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         int o;
         int n;
         int m;
-        this.renderBackground(matrices);
+        this.renderBackground(graphics);
         int i = this.getScrollbarPosition();
         int j = i + 6;
         Tesselator tesselator = Tesselator.getInstance();
@@ -85,41 +86,41 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
 //        Object v0 = this.hoveredEntry;
 
         //Render Background
-        RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, Button.WIDGETS_LOCATION);
         float f = 32.0f;
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
         int color = 45;
-        bufferBuilder.vertex(this.x0, this.y1, 0.0).uv((float)this.x0 / 32.0f, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
-        bufferBuilder.vertex(this.x1, this.y1, 0.0).uv((float)this.x1 / 32.0f, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
-        bufferBuilder.vertex(this.x1, this.y0, 0.0).uv((float)this.x1 / 32.0f, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
-        bufferBuilder.vertex(this.x0, this.y0, 0.0).uv((float)this.x0 / 32.0f, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
+        bufferBuilder.vertex(this.x0, this.y1, 0.0).uv(this.x0 / 32.0f, (this.y1 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
+        bufferBuilder.vertex(this.x1, this.y1, 0.0).uv(this.x1 / 32.0f, (this.y1 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
+        bufferBuilder.vertex(this.x1, this.y0, 0.0).uv(this.x1 / 32.0f, (this.y0 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
+        bufferBuilder.vertex(this.x0, this.y0, 0.0).uv(this.x0 / 32.0f, (this.y0 + (int)this.getScrollAmount()) / 32.0f).color(color, color, color, 255).endVertex();
         tesselator.end();
 
         int k = this.getRowLeft();
         int l = this.y0 + 4 - (int)this.getScrollAmount();
 
-        this.renderHeader(matrices, k, l);
+        this.renderHeader(graphics, k, l);
 
-        this.renderList(matrices, k, l, mouseX, mouseY, delta);
+        this.renderList(graphics, k, l, mouseX, mouseY, delta);
 
         //Render horizontal shadows
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, GuiComponent.BACKGROUND_LOCATION);
+        RenderSystem.setShaderTexture(0, Button.WIDGETS_LOCATION);
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(519);
         float g = 32.0f;
         m = -100;
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferBuilder.vertex(this.x0, this.y0, -100.0).uv(0.0f, (float)this.y0 / 32.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0 + this.width, this.y0, -100.0).uv((float)this.width / 32.0f, (float)this.y0 / 32.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0 + this.width, 0.0, -100.0).uv((float)this.width / 32.0f, 0.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0, this.y0, -100.0).uv(0.0f, this.y0 / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0 + this.width, this.y0, -100.0).uv(this.width / 32.0f, this.y0 / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0 + this.width, 0.0, -100.0).uv(this.width / 32.0f, 0.0f).color(64, 64, 64, 255).endVertex();
         bufferBuilder.vertex(this.x0, 0.0, -100.0).uv(0.0f, 0.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0, this.height, -100.0).uv(0.0f, (float)this.height / 32.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0 + this.width, this.height, -100.0).uv((float)this.width / 32.0f, (float)this.height / 32.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0 + this.width, this.y1, -100.0).uv((float)this.width / 32.0f, (float)this.y1 / 32.0f).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(this.x0, this.y1, -100.0).uv(0.0f, (float)this.y1 / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0, this.height, -100.0).uv(0.0f, this.height / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0 + this.width, this.height, -100.0).uv(this.width / 32.0f, this.height / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0 + this.width, this.y1, -100.0).uv(this.width / 32.0f, this.y1 / 32.0f).color(64, 64, 64, 255).endVertex();
+        bufferBuilder.vertex(this.x0, this.y1, -100.0).uv(0.0f, this.y1 / 32.0f).color(64, 64, 64, 255).endVertex();
         tesselator.end();
 
         RenderSystem.depthFunc(515);
@@ -163,7 +164,7 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
             bufferBuilder.vertex(i, n, 0.0).color(192, 192, 192, 255).endVertex();
             tesselator.end();
         }
-        this.renderDecorations(matrices, mouseX, mouseY);
+        this.renderDecorations(graphics, mouseX, mouseY);
         RenderSystem.disableBlend();
     }
 
@@ -186,7 +187,7 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
         return Optional.empty();
     }
 
-    protected void renderList(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+    protected void renderList(GuiGraphics graphics, int x, int y, int mouseX, int mouseY, float delta) {
         int i = this.getItemCount();
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
@@ -222,10 +223,11 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
 
             }
             p = this.getRowLeft();
-            entry.render(matrices, j, k, p, o, n, mouseX, mouseY, false, delta);
+            entry.render(graphics, j, k, p, o, n, mouseX, mouseY, false, delta);
         }
     }
 
+    @Override
     protected int getRowBottom(int index) {
         return this.getRowTop(index) + this.itemHeight;
     }
@@ -241,9 +243,9 @@ public class OptionList2 extends ContainerObjectSelectionList<OptionList2.Entry>
         }
 
         @Override
-        public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             button.y = y;
-            button.render(matrices, mouseX, mouseY, tickDelta);
+            button.render(graphics, mouseX, mouseY, tickDelta);
         }
 
         @Override

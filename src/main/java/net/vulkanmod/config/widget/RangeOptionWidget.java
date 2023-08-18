@@ -3,6 +3,7 @@ package net.vulkanmod.config.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -32,7 +33,7 @@ public class RangeOptionWidget extends OptionWidget {
     }
 
     @Override
-    protected void renderBackground(PoseStack matrices, Minecraft client, int mouseX, int mouseY) {
+    protected void renderBackground(GuiGraphics graphics, Minecraft client, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.isHovered() ? 2 : 1) * 20;
@@ -41,7 +42,7 @@ public class RangeOptionWidget extends OptionWidget {
 
         int color = this.controlHovered ? VUtil.packColor(1.0f, 1.0f, 1.0f, 1.0f) : VUtil.packColor(1.0f, 1.0f, 1.0f, 0.8f);
 
-        fill(matrices, this.controlX + (int)(this.value * (this.controlWidth - 8)), this.y + 20, this.controlX + (int)(this.value * (this.controlWidth - 8)) + 8, this.y, color);
+        graphics.fill(this.controlX + (int)(this.value * (this.controlWidth - 8)), this.y + 20, this.controlX + (int)(this.value * (this.controlWidth - 8)) + 8, this.y, color);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class RangeOptionWidget extends OptionWidget {
         boolean bl2 = bl = keyCode == GLFW.GLFW_KEY_LEFT;
         if (bl || keyCode == GLFW.GLFW_KEY_RIGHT) {
             float f = bl ? -1.0f : 1.0f;
-            this.setValue(this.value + (double)(f / (float)(this.width - 8)));
+            this.setValue(this.value + f / (this.width - 8));
         }
         return false;
     }
@@ -71,7 +72,7 @@ public class RangeOptionWidget extends OptionWidget {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.setValue((mouseX - (double)(this.controlX + 4)) / (double)((this.controlWidth) - 8));
+        this.setValue((mouseX - (this.controlX + 4)) / ((this.controlWidth) - 8));
     }
 
     private void setValue(double value) {
@@ -89,6 +90,7 @@ public class RangeOptionWidget extends OptionWidget {
         super.onDrag(mouseX, mouseY, deltaX, deltaY);
     }
 
+    @Override
     protected void applyValue() {
         option.setValue((float) this.value);
         this.value = option.getScaledValue();

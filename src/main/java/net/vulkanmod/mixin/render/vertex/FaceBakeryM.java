@@ -21,7 +21,8 @@ public class FaceBakeryM {
     private static final float d = 1.0f / 16.0f;
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Optimize to remove division (multiplication is always faster)
      */
     @Overwrite
     private float[] setupShape(Vector3f vector3f, Vector3f vector3f2) {
@@ -36,7 +37,8 @@ public class FaceBakeryM {
     }
 
     /**
-     * @author
+     * @author Collateral
+     * @reason Optimize to remove division (multiplication is always faster)
      */
     @Overwrite
     public static BlockFaceUV recomputeUVs(BlockFaceUV blockFaceUV, Direction direction, Transformation transformation, ResourceLocation resourceLocation) {
