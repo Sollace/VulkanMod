@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
@@ -17,11 +17,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.List;
-
-import static net.vulkanmod.Initializer.getVersion;
 
 @Mixin(DebugScreenOverlay.class)
 public abstract class DebugHudM {
@@ -113,7 +109,7 @@ public abstract class DebugHudM {
             int l = this.minecraft.getWindow().getGuiScaledWidth() - 2 - k;
             int m = 2 + j * i;
 
-            GuiBatchRenderer.drawString(this.font, bufferSource, matrices, string, (float)l, (float)m, 0xE0E0E0);
+            GuiBatchRenderer.drawString(this.font, bufferSource, matrices, string, l, m, 0xE0E0E0);
         }
         bufferSource.endBatch();
     }
